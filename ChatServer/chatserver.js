@@ -1,20 +1,10 @@
-const http = require("http");
+const { Server } = require("socket.io");
 
-const port = process.env.port || 3000;
+const io = new Server(3000, { /* options */ });
 
-const server = http.createServer(async (req, res) => {
-    const buffers = [];
-
-    for await (const chunk of req) {
-        buffers.push(chunk);
-    }
-
-    const data = Buffer.concat(buffers).toString();
-    const todo = JSON.parse(data).todo
-    console.log(todo);
-    res.end(todo)
-})
-
-server.listen(port, () =>{
-    console.log(`Server running on port ${port}`);
-})
+io.on('connection', (socket) => {
+    console.log('a user connected');
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+});
