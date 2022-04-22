@@ -86,7 +86,14 @@
       socket.on('chat message', function(msg) {
         var item = document.createElement('li');
         let msgObj = JSON.parse(msg);
-
+        if(msgObj.content.contains("@"+name)){
+          var audio = new Audio('./sound/mention_alert.mp3');
+          audio.play();
+        }
+        else{
+          var audio = new Audio('./sound/message_alert.mp3');
+          audio.play();
+        }
         item.textContent = msgObj.timestamp + " - " + msgObj.username + " - " +msgObj.content;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
