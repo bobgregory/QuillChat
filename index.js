@@ -25,11 +25,7 @@ io.on('connection', (socket) => {
 });
 
 io.on("connection", (socket) => {
-  var ip = socket.conn.remoteAddress;
-  const splitIP = ip.split(":");
-  var ip = splitIP[3];
   socket.on('chat message', msg => {
-    var msg = ip + " - " + msg;
     io.emit('chat message', msg);
     console.log("MSG-" + msg);
   });
