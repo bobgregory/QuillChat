@@ -1,0 +1,7 @@
+version: '3'
+services:
+  thatguyjackutils:
+    image: registry.gitlab.tgj.services/petegregoryy/QuillChat:latest
+    restart: unless-stopped
+    ports:
+      - "4269:3000"
