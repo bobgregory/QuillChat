@@ -4,7 +4,7 @@
   <head>
     <title>QuillChat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" type= "text/css" href="style.css" />
   </head>
 
   <body>
@@ -86,15 +86,18 @@
       socket.on('chat message', function(msg) {
         var item = document.createElement('li');
         let msgObj = JSON.parse(msg);
-        if(msgObj.content.contains("@"+name)){
-          var audio = new Audio('./sound/mention_alert.mp3');
+        if(msgObj.content.includes("@"+name)){
+          var audio = new Audio('./sound/?file=mention_alert.mp3');
           audio.play();
         }
         else{
-          var audio = new Audio('./sound/message_alert.mp3');
-          audio.play();
-        }
-        item.textContent = msgObj.timestamp + " - " + msgObj.username + " - " +msgObj.content;
+		if(msgObj.username !== name){
+			var audio = new Audio('./sound/?file=message_alter.mp3');
+			audio.play();
+		}
+   	}
+	let messageDate = new Date(msgObj.timestamp);
+        item.textContent =  messageDate.toLocaleString() + " - " + msgObj.username + ": " +msgObj.content;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
