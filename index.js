@@ -10,6 +10,15 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/sound/', (req,res) =>{
+	console.log(req);
+	res.sendFile(__dirname + "/sound/"+req.query.file);
+});
+
+app.get("/style.css",(req,res) =>{
+	res.sendFile(__dirname+ "/style.css");
+});
+
 http.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
@@ -27,8 +36,11 @@ io.on('connection', (socket) => {
 io.on("connection", (socket) => {
   socket.on('chat message', msg => {
     let unixTime = new Date().getTime();
-    var msg = unixTime + " - " + msg;
-    io.emit('chat message', msg);
-    console.log("MSG-" + msg);
+    let msgObj = JSON.parse(msg);
+    msgObj.timestamp = unixTime;
+    //var msg = unixTime + " - " + msg;
+    let msg2 = JSON.stringify(msgObj);
+    io.emit('chat message', msg2);
+    console.log("MSG-" + msg2);
   });
 });
