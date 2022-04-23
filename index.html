@@ -1,106 +1,113 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <title>QuillChat</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="style.css" />
+    </head>
 
-  <head>
-    <title>QuillChat</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type= "text/css" href="style.css" />
-  </head>
+    <body>
+        <div class="usrnmForm">
+            <form autocomplete="on" id="usrnmForm">
+                <input type="type" id="usrnm" /><button
+                    class="user-form-button"
+                    onclick="usernameSet()"
+                >
+                    Start Quilling
+                </button>
+            </form>
+        </div>
 
-  <body>
+        <div id="main">
+            <ul id="messages"></ul>
+            <form id="form" action="">
+                <input id="input" autocomplete="off" /><button>Send</button>
+            </form>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
 
-    <div class="usrnmForm"> 
-      <form autocomplete="on" id="usrnmForm">
-        <input type="type" id="usrnm"/><button class="user-form-button" onclick="usernameSet()">Start Quilling</button>
-      </form>
-    </div>
+        <script>
+            function setCookie(cname, cvalue, exdays) {
+                const d = new Date();
+                d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+                let expires = "expires=" + d.toUTCString();
+                document.cookie =
+                    cname + "=" + cvalue + ";" + expires + ";path=/";
+            }
 
-    <div id="main">
-      <ul id="messages"></ul>
-      <form id="form" action="">
-        <input id="input" autocomplete="off" /><button>Send</button>
-      </form>
-    </div>
-    <script src="/socket.io/socket.io.js"></script>
+            function getCookie(cname) {
+                let name = cname + "=";
+                let decodedCookie = decodeURIComponent(document.cookie);
+                let ca = decodedCookie.split(";");
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == " ") {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
+            }
 
-    <script>
-      function setCookie(cname, cvalue, exdays) {
-        const d = new Date();
-        d.setTime(d.getTime() + (exdays*24*60*60*1000));
-        let expires = "expires="+ d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-      } 
-      
-      function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for(let i = 0; i <ca.length; i++) {
-          let c = ca[i];
-          while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-          }
-          if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-          }
-        }
-        return "";
-      }
+            function usernameSet() {
+                var username = document.getElementById("usrnm").value;
+                if (username != "" && username != null) {
+                    setCookie("username", username, 365);
+                    window.location.reload(true);
+                }
+            }
 
-      function usernameSet() {
-        var username = document.getElementById('usrnm').value;
-        if (username != "" && username != null) {
-            setCookie("username", username, 365);
-            window.location.reload(true);
-        }
-      }
+            var socket = io();
 
-    
+            var name = getCookie("username");
+            if (name != "" && name != null) {
+                document.getElementById("usrnmForm").innerHTML = "";
+            }
+            var messages = document.getElementById("messages");
+            var form = document.getElementById("form");
+            var input = document.getElementById("input");
 
-      var socket = io();
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                if (input.value) {
+                    //var toSend = name + ":  " + input.value;
+                    let toSendRaw = {
+                        username: name,
+                        content: input.value,
+                        timestamp: "",
+                    };
+                    let toSend = JSON.stringify(toSendRaw);
+                    socket.emit("chat message", toSend);
+                    input.value = "";
+                }
+            });
 
-      
-      var name = getCookie("username");
-      if (name != "" && name != null) {
-        document.getElementById("usrnmForm").innerHTML = "";
-      }
-      var messages = document.getElementById('messages');
-      var form = document.getElementById('form');
-      var input = document.getElementById('input');
-
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (input.value) {
-          //var toSend = name + ":  " + input.value;
-          let toSendRaw = {
-            "username":name,
-            "content":input.value,
-            "timestamp":""
-          }
-          let toSend = JSON.stringify(toSendRaw);
-          socket.emit('chat message', toSend);
-          input.value = '';
-        }
-      });
-
-      socket.on('chat message', function(msg) {
-        var item = document.createElement('li');
-        let msgObj = JSON.parse(msg);
-        if(msgObj.content.includes("@"+name)){
-          var audio = new Audio('./sound/?file=mention_alert.mp3');
-          audio.play();
-        }
-        else{
-		if(msgObj.username !== name){
-			var audio = new Audio('./sound/?file=message_alter.mp3');
-			audio.play();
-		}
-   	}
-	let messageDate = new Date(msgObj.timestamp);
-        item.textContent =  messageDate.toLocaleString() + " - " + msgObj.username + ": " +msgObj.content;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      });
-    </script>
-  </body>
+            socket.on("chat message", function (msg) {
+                var item = document.createElement("li");
+                let msgObj = JSON.parse(msg);
+                if (msgObj.content.includes("@" + name)) {
+                    var audio = new Audio("./sound/?file=mention_alert.mp3");
+                    audio.play();
+                } else {
+                    if (msgObj.username !== name) {
+                        var audio = new Audio(
+                            "./sound/?file=message_alter.mp3"
+                        );
+                        audio.play();
+                    }
+                }
+                let messageDate = new Date(msgObj.timestamp);
+                item.textContent =
+                    messageDate.toLocaleString() +
+                    " - " +
+                    msgObj.username +
+                    ": " +
+                    msgObj.content;
+                messages.appendChild(item);
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+        </script>
+    </body>
 </html>
