@@ -1,6 +1,7 @@
 version: '3'
 services:
-  thatguyjackutils:
+  quillchat:
+    network_mode: bridge
     image: registry.gitlab.tgj.services/petegregoryy/QuillChat:latest
     restart: unless-stopped
     ports:
