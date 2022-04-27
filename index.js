@@ -34,12 +34,12 @@ io.on("connection", (socket) => {
 });
 
 io.on("connection", (socket) => {
-    socket.on("chat message", (msg) => {
+    socket.on("messageCreated", (msg) => {
         let unixTime = new Date().getTime();
         let msgObj = JSON.parse(msg);
         msgObj.timestamp = unixTime;
         let msg2 = JSON.stringify(msgObj);
-        io.emit("chat message", msg2);
+        io.emit("messageCreated", msg2);
         console.log("MSG-" + msg2);
     });
 });

@@ -79,12 +79,12 @@
                         timestamp: "",
                     };
                     let toSend = JSON.stringify(toSendRaw);
-                    socket.emit("chat message", toSend);
+                    socket.emit("messageCreated", toSend);
                     input.value = "";
                 }
             });
 
-            socket.on("chat message", function (msg) {
+            socket.on("messageCreated", function (msg) {
                 if(getCookie("username") != ""){
                     var item = document.createElement("li");
                     let msgObj = JSON.parse(msg);
