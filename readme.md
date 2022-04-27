@@ -1,6 +1,5 @@
-
 # QuillChat.app
-This is the repo for my https://QuillChat.app ~~electron~~ web app
+This is the repo for my https://ssh.petegregory.net:4269 ~~electron~~ web app
 
 ## Table of contents
 * [General info](#general-info)
