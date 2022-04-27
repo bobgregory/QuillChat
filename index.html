@@ -55,6 +55,7 @@
                 var username = document.getElementById("usrnm").value;
                 if (username != "" && username != null) {
                     setCookie("username", username, 365);
+                    let usr = {username:username};
                     window.location.reload(true);
                 }
             }

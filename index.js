@@ -33,6 +33,12 @@ io.on("connection", (socket) => {
     });
 });
 
+io.on("connection",(socket) => {
+    socket.on("userJoined", (usr) =>{
+        io.emit("userJoined", usr);
+    })
+});
+
 io.on("connection", (socket) => {
     socket.on("messageCreated", (msg) => {
         let unixTime = new Date().getTime();
