@@ -85,28 +85,30 @@
             });
 
             socket.on("chat message", function (msg) {
-                var item = document.createElement("li");
-                let msgObj = JSON.parse(msg);
-                if (msgObj.content.includes("@" + name)) {
-                    var audio = new Audio("./sound/?file=mention_alert.mp3");
-                    audio.play();
-                } else {
-                    if (msgObj.username !== name) {
-                        var audio = new Audio(
-                            "./sound/?file=message_alter.mp3"
-                        );
+                if(getCookie("username") != ""){
+                    var item = document.createElement("li");
+                    let msgObj = JSON.parse(msg);
+                    if (msgObj.content.includes("@" + name)) {
+                        var audio = new Audio("./sound/?file=mention_alert.mp3");
                         audio.play();
+                    } else {
+                        if (msgObj.username !== name) {
+                            var audio = new Audio(
+                                "./sound/?file=message_alter.mp3"
+                            );
+                            audio.play();
+                        }
                     }
+                    let messageDate = new Date(msgObj.timestamp);
+                    item.textContent =
+                        messageDate.toLocaleString() +
+                        " - " +
+                        msgObj.username +
+                        ": " +
+                        msgObj.content;
+                    messages.appendChild(item);
+                    window.scrollTo(0, document.body.scrollHeight);
                 }
-                let messageDate = new Date(msgObj.timestamp);
-                item.textContent =
-                    messageDate.toLocaleString() +
-                    " - " +
-                    msgObj.username +
-                    ": " +
-                    msgObj.content;
-                messages.appendChild(item);
-                window.scrollTo(0, document.body.scrollHeight);
             });
         </script>
     </body>
